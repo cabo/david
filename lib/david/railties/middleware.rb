@@ -1,5 +1,6 @@
 require 'david/resource_discovery_proxy'
 require 'david/show_exceptions'
+require 'david/transcoding_proxy'
 
 module David
   module Railties
@@ -36,6 +37,13 @@ module David
           app.middleware.insert_after \
             David::ShowExceptions,
             David::ResourceDiscoveryProxy
+        end
+
+        # Include Transcoding middleware
+        if config.coap.transcoding
+          app.middleware.insert_before \
+            David::ShowExceptions,
+            David::TranscodingProxy
         end
       end
     end

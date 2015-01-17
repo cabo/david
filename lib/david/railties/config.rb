@@ -23,6 +23,9 @@ module David
 
       # Resource Discovery
       config.coap.resource_discovery = true
+
+      # Transcoding
+      config.coap.transcoding = true
     end
   end
 end
