@@ -29,6 +29,9 @@ require 'rack/handler/coap'
 
 require 'david/guerilla/rack/handler'
 
+require 'david/app_config'
+require 'david/launcher'
+
 require 'david/actor'
 require 'david/registry'
 require 'david/exchange'

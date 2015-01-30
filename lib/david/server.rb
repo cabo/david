@@ -1,6 +1,5 @@
 require 'david/server/mid_cache'
-require 'david/server/multicast'
-require 'david/server/options'
+# require 'david/server/multicast'
 require 'david/server/respond'
 
 module David
@@ -8,38 +7,25 @@ module David
     include Celluloid::IO
 
     include MidCache
-    include Multicast
-    include Options
+    # include Multicast
     include Respond
 
     attr_reader :socket
 
     finalizer :shutdown
 
-    def initialize(app, options)
-      @block   = choose(:block,   options[:Block])
-      @cbor    = choose(:cbor,    options[:CBOR])
-      @host    = choose(:host,    options[:Host])
-      @log     = choose(:logger,  options[:Log])
-      @mcast   = choose(:mcast,   options[:Multicast])
-      @observe = choose(:observe, options[:Observe])
-      @port    = options[:Port].to_i
+    def initialize(socket, mid_cache, app, options)
+      @app        = app.respond_to?(:new) ? app.new : app
+      @mid_cache  = mid_cache
+      @options    = options
+      @socket     = socket
 
-      @app     = app.respond_to?(:new) ? app.new : app
-
-      @default_format = choose(:default_format, options[:DefaultFormat])
-
-      @mid_cache = {}
-
-      log.info "David #{David::VERSION} on #{RUBY_DESCRIPTION}"
-      log.info "Starting on [#{@host}]:#{@port}"
-
-      af = ipv6? ? ::Socket::AF_INET6 : ::Socket::AF_INET
+      # af = ipv6? ? ::Socket::AF_INET6 : ::Socket::AF_INET
 
       # Actually Celluloid::IO::UDPSocket.
-      @socket = UDPSocket.new(af)
-      multicast_initialize! if @mcast
-      @socket.bind(@host, @port)
+      # @socket = UDPSocket.new(af)
+      # multicast_initialize! if @mcast
+      # @socket.bind(@host, @port)
     end
 
     def run
