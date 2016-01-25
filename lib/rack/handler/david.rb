@@ -11,6 +11,23 @@ module Rack
           g.supervise(as: :observe, type: ::David::Observe)
         end
 
+        warn "COAP_ONLY: #{coap_only?.inspect}"
+        unless coap_only?
+          default_options = {
+            :Host    => "0.0.0.0",
+            :Port    => 3000,
+            :quiet   => false
+          }
+          options = default_options.merge(options)
+
+          app = Rack::CommonLogger.new(app, STDOUT) unless options[:quiet]
+          ENV['RACK_ENV'] = options[:environment].to_s if options[:environment]
+
+          warn "REEL OPTIONS: #{options.inspect}"
+
+          g.supervise(as: :reel_rack_server, type: ::Reel::Rack::Server, args: [app, options])
+        end
+
         begin
           Celluloid::Actor[:server].run
         rescue Interrupt
@@ -33,6 +50,12 @@ module Rack
           'Observe=BOOLEAN'   => 'Observe support (default: true)',
           'Port=PORT'         => "Port to listen on (default: #{port})"
         }
+      end
+
+      
+      def self.coap_only?
+        false                   # XXX
+        # ::Rack::Handler::rails_coap_only
       end
     end
 

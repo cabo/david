@@ -16,10 +16,10 @@ module Rack
       else
         # Return David as handler unless Rails is loaded and config.coap.only
         # is set to false.
-        return Rack::Handler::David unless rails_coap_only
+        return Rack::Handler::David # unless rails_coap_only
 
         # Original Rack handler order.
-        pick ['thin', 'puma', 'webrick']
+        # pick ['thin', 'puma', 'webrick']
       end
     end
 
